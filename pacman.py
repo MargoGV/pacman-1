@@ -76,7 +76,19 @@ class Ghost(GameObject):
                 self.y = 0
                 self.direction = random.randint(1, 4)
         self.set_coord(self.x, self.y)
-
+class Map(GameObject):
+    def __init__(self,x,y):
+        self.map=[[list]*x for i in range (y)]
+    def get(self,x,y):
+        return self.map[x][y]
+    def moveTo(self,obj,new_x,new_y):
+        point=self.map[obj.x][obj.y]
+        if obj in point:
+            point.remove(obj)
+            self.map[new_x][new_y].add(obj)
+            obj.set_ccord(x,y)
+            return true
+        return false
 
 class Pacman(GameObject):
     def __init__(self, x, y, tile_size, map_size):
@@ -121,14 +133,19 @@ def process_events(events, packman):
                 packman.direction = 2
             elif event.key == K_SPACE:
                 packman.direction = 0
+class Wall(GameObject):
+    def __init__(self, x, y, tile_size, map_size):
+        GameObject.__init__(self, './resources/wall.png', x, y, tile_size, map_size)
 
-
+    def get(self,x,y):
+        return self.map[x][y]
 if __name__ == '__main__':
     init_window()
     tile_size = 32
     map_size = 16
     ghost = Ghost(0, 0, tile_size, map_size)
     pacman = Pacman(5, 5, tile_size, map_size)
+    wall = Wall(3, 6, tile_size, map_size)
     background = pygame.image.load("./resources/background.png")
     screen = pygame.display.get_surface()
 
@@ -140,4 +157,5 @@ if __name__ == '__main__':
         draw_background(screen, background)
         pacman.draw(screen)
         ghost.draw(screen)
+        map.draw(screen)
         pygame.display.update()

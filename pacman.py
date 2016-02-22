@@ -45,6 +45,7 @@ class GameObject(pygame.sprite.Sprite):
 
 
 class Ghost(GameObject):
+    ghosts=[]
     def __init__(self, x, y, tile_size, map_size):
         GameObject.__init__(self, './resources/ghost.png', x, y, tile_size, map_size)
         self.direction = 0
@@ -117,6 +118,11 @@ class Pacman(GameObject):
 
         self.set_coord(self.x, self.y)
 
+class Food(GameObject):
+    def __init__(self, x, y, tile_size, map_size):
+        GameObject.__init__(self, './resources/pig.png', x,y,tile_size,map_size)
+    def game_tick(self):
+        super(Food,self).game_tick()
 
 def process_events(events, packman):
     for event in events:
@@ -133,19 +139,37 @@ def process_events(events, packman):
                 packman.direction = 2
             elif event.key == K_SPACE:
                 packman.direction = 0
+
 class Wall(GameObject):
     def __init__(self, x, y, tile_size, map_size):
         GameObject.__init__(self, './resources/wall.png', x, y, tile_size, map_size)
 
     def get(self,x,y):
         return self.map[x][y]
+
+
+def create_walls(ts,ms):
+    Wall.w = [Wall(0,1,tile_size,map_size), Wall(1,6,tile_size,map_size), Wall(8,9,tile_size,map_size), Wall(3,8,tile_size,map_size), Wall(4,1,tile_size,map_size), Wall(5,1,ts,ms)]
+
+def is_wall(x, y):
+    for w in Wall.w:
+        if (int(w.x), int(w.y)) == (int(x), int(y)):
+            return True
+    return False
+
+def draw_walls(screen):
+    for w in Wall.w:
+        GameObject.draw(w,screen)
+
+
 if __name__ == '__main__':
     init_window()
     tile_size = 32
     map_size = 16
     ghost = Ghost(0, 0, tile_size, map_size)
+    ghost1= Ghost(1, 2, tile_size, map_size)
     pacman = Pacman(5, 5, tile_size, map_size)
-    wall = Wall(3, 6, tile_size, map_size)
+    create_walls(tile_size,map_size)
     background = pygame.image.load("./resources/background.png")
     screen = pygame.display.get_surface()
 
@@ -157,5 +181,7 @@ if __name__ == '__main__':
         draw_background(screen, background)
         pacman.draw(screen)
         ghost.draw(screen)
-        map.draw(screen)
+        ghost1.draw(screen)
+        draw_walls(screen)
         pygame.display.update()
+

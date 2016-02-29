@@ -46,6 +46,7 @@ class GameObject(pygame.sprite.Sprite):
 
 class Ghost(GameObject):
     ghosts=[]
+    num=2
     def __init__(self, x, y, tile_size, map_size):
         GameObject.__init__(self, './resources/ghost.png', x, y, tile_size, map_size)
         self.direction = 0
@@ -77,6 +78,18 @@ class Ghost(GameObject):
                 self.y = 0
                 self.direction = random.randint(1, 4)
         self.set_coord(self.x, self.y)
+
+def draw_ghosts(screen):
+    for g in Ghost.ghosts:
+        g.draw(screen)
+
+def create_ghosts(ts, ms):
+    Ghost.ghosts = [Ghost(5, 5, ts, ms) for i in range(Ghost.num)]
+
+def tick_ghosts():
+    for g in Ghost.ghosts:
+        g.game_tick()
+
 class Map(GameObject):
     def __init__(self,x,y):
         self.map=[[list]*x for i in range (y)]
@@ -124,6 +137,10 @@ class Food(GameObject):
     def game_tick(self):
         super(Food,self).game_tick()
 
+
+
+
+
 def process_events(events, packman):
     for event in events:
         if (event.type == QUIT) or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -149,7 +166,7 @@ class Wall(GameObject):
 
 
 def create_walls(ts,ms):
-    Wall.w = [Wall(0,1,tile_size,map_size), Wall(1,6,tile_size,map_size), Wall(8,9,tile_size,map_size), Wall(3,8,tile_size,map_size), Wall(4,1,tile_size,map_size), Wall(5,1,ts,ms)]
+    Wall.w = [Wall(1,1,ts,ms), Wall(3,4,ts,ms), Wall(4,5,ts,ms), Wall(5,8,ts,ms), Wall(4,9,ts,ms), Wall(7,2,ts,ms)]
 
 def is_wall(x, y):
     for w in Wall.w:
@@ -184,4 +201,3 @@ if __name__ == '__main__':
         ghost1.draw(screen)
         draw_walls(screen)
         pygame.display.update()
-

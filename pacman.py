@@ -52,6 +52,7 @@ class Ghost(GameObject):
         self.direction = 0
         self.velocity = 4.0 / 10.0
 
+
     def game_tick(self):
         super(Ghost, self).game_tick()
         if self.tick % 20 == 0 or self.direction == 0:
@@ -113,19 +114,23 @@ class Pacman(GameObject):
     def game_tick(self):
         super(Pacman, self).game_tick()
         if self.direction == 1:
-            self.x += self.velocity
+            if not is_wall(floor(self.x+self.velocity), self.y):
+                self.x += self.velocity
             if self.x >= self.map_size-1:
                 self.x = self.map_size-1
         elif self.direction == 2:
-            self.y += self.velocity
+            if not is_wall(self.x,(floor(self.y+self.velocity))):
+                self.y += self.velocity
             if self.y >= self.map_size-1:
                 self.y = self.map_size-1
         elif self.direction == 3:
-            self.x -= self.velocity
+            if not is_wall(floor(self.x-self.velocity),self.y):
+                self.x -= self.velocity
             if self.x <= 0:
                 self.x = 0
         elif self.direction == 4:
-            self.y -= self.velocity
+            if not is_wall(self.x,(floor(self.y-self.velocity))):
+                self.y -= self.velocity
             if self.y <= 0:
                 self.y = 0
 
@@ -166,7 +171,7 @@ class Wall(GameObject):
 
 
 def create_walls(ts,ms):
-    Wall.w = [Wall(1,1,ts,ms), Wall(3,4,ts,ms), Wall(4,5,ts,ms), Wall(5,8,ts,ms), Wall(4,9,ts,ms), Wall(7,2,ts,ms)]
+    Wall.w = [Wall(1,1,ts,ms), Wall(3,4,ts,ms), Wall(4,5,ts,ms), Wall(5,8,ts,ms), Wall(4,9,ts,ms), Wall(7,2,ts,ms, )]
 
 def is_wall(x, y):
     for w in Wall.w:
@@ -194,6 +199,7 @@ if __name__ == '__main__':
         process_events(pygame.event.get(), pacman)
         pygame.time.delay(100)
         ghost.game_tick()
+        ghost1.game_tick()
         pacman.game_tick()
         draw_background(screen, background)
         pacman.draw(screen)
@@ -201,3 +207,5 @@ if __name__ == '__main__':
         ghost1.draw(screen)
         draw_walls(screen)
         pygame.display.update()
+
+

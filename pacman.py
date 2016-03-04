@@ -59,22 +59,26 @@ class Ghost(GameObject):
             self.direction = random.randint(1, 4)
 
         if self.direction == 1:
-            self.x += self.velocity
+            if not is_wall(floor(self.x+self.velocity), self.y):
+                self.x += self.velocity
             if self.x >= self.map_size-1:
                 self.x = self.map_size-1
                 self.direction = random.randint(1, 4)
         elif self.direction == 2:
-            self.y += self.velocity
+            if not is_wall(self.x,(floor( self.y+self.velocity))):
+                self.y += self.velocity
             if self.y >= self.map_size-1:
                 self.y = self.map_size-1
                 self.direction = random.randint(1, 4)
         elif self.direction == 3:
-            self.x -= self.velocity
+            if not is_wall(floor(self.x-self.velocity),self.y):
+                self.x -= self.velocity
             if self.x <= 0:
                 self.x = 0
                 self.direction = random.randint(1, 4)
         elif self.direction == 4:
-            self.y -= self.velocity
+            if not is_wall(self.x,(floor(self.y-self.velocity))):
+                self.y -= self.velocity
             if self.y <= 0:
                 self.y = 0
                 self.direction = random.randint(1, 4)
@@ -143,9 +147,6 @@ class Food(GameObject):
         super(Food,self).game_tick()
 
 
-
-
-
 def process_events(events, packman):
     for event in events:
         if (event.type == QUIT) or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -162,6 +163,7 @@ def process_events(events, packman):
             elif event.key == K_SPACE:
                 packman.direction = 0
 
+
 class Wall(GameObject):
     def __init__(self, x, y, tile_size, map_size):
         GameObject.__init__(self, './resources/wall.png', x, y, tile_size, map_size)
@@ -170,17 +172,14 @@ class Wall(GameObject):
         return self.map[x][y]
 
 
-def create_walls(ts,ms):
-    Wall.w = [Wall(1,1,ts,ms), Wall(3,4,ts,ms), Wall(4,5,ts,ms), Wall(5,8,ts,ms), Wall(4,9,ts,ms), Wall(7,2,ts,ms, )]
-
 def is_wall(x, y):
-    for w in Wall.w:
+    for w in walls:
         if (int(w.x), int(w.y)) == (int(x), int(y)):
             return True
     return False
 
 def draw_walls(screen):
-    for w in Wall.w:
+    for w in walls:
         GameObject.draw(w,screen)
 
 
@@ -188,10 +187,16 @@ if __name__ == '__main__':
     init_window()
     tile_size = 32
     map_size = 16
+    walls=[]
+    input=open('map.txt','r')
+    for i in range (17):
+        for a in range(17):
+            s=input.read(1)
+            if s=='w':
+                walls.append(Wall(a,i,tile_size,map_size))
     ghost = Ghost(0, 0, tile_size, map_size)
     ghost1= Ghost(1, 2, tile_size, map_size)
     pacman = Pacman(5, 5, tile_size, map_size)
-    create_walls(tile_size,map_size)
     background = pygame.image.load("./resources/background.png")
     screen = pygame.display.get_surface()
 

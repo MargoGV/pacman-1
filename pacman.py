@@ -1,3 +1,4 @@
+
 import sys
 import pygame
 from pygame.locals import *
@@ -275,6 +276,3 @@ if __name__ == '__main__':
         for g in ghosts:
             if int(g.x)==int(pacman.x) and int(g.y)==int(pacman.y):
                 sys.exit()
-
-
-

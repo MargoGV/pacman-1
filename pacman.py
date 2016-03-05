@@ -55,41 +55,84 @@ class Ghost(GameObject):
 
     def game_tick(self):
         super(Ghost, self).game_tick()
-        if self.tick % 20 == 0 or self.direction == 0:
+        if int(self.x)==int(pacman.x) and int(self.y)>int(pacman.y):
+            b=0
+            a=pacman.y
+            while a<self.y and b==0:
+                if is_wall (floor(self.x), a):
+                    b=1
+                a+=1
+            if b==0:
+                self.direction=4
+        elif  int(self.x)==int(pacman.x) and int(self.y)<int(pacman.y):
+            b=0
+            a=self.y
+            while a<pacman.y and b==0:
+                if is_wall (floor(self.x), a):
+                    b=1
+                a+=1
+            if b==0:
+                self.direction=2
+        elif   int(self.x)>int(pacman.x) and int(self.y)==int(pacman.y):
+            b=0
+            a=pacman.x
+            while a<self.x and b==0:
+                if is_wall (floor (a) , (self.y)):
+                    b=1
+                a+=1
+            if b==0:
+                self.direction=3
+        elif int(self.x)<int(pacman.x) and int(self.y)==int(pacman.y):
+            b=0
+            a=self.x
+            while a<pacman.x and b==0:
+                if is_wall (floor (a) , (self.y)):
+                    b=1
+                a+=1
+            if b==0:
+                self.direction=1
+        elif self.tick % 20 == 0 or self.direction == 0:
             self.direction = random.randint(1, 4)
 
         if self.direction == 1:
             if not is_wall(floor(self.x+self.velocity), self.y):
                 self.x += self.velocity
+            else:
+                self.direction = random.randint(1, 4)
             if self.x >= self.map_size-1:
                 self.x = self.map_size-1
                 self.direction = random.randint(1, 4)
         elif self.direction == 2:
             if not is_wall(self.x,(floor( self.y+self.velocity))):
                 self.y += self.velocity
+            else:
+                self.direction = random.randint(1, 4)
             if self.y >= self.map_size-1:
                 self.y = self.map_size-1
                 self.direction = random.randint(1, 4)
         elif self.direction == 3:
             if not is_wall(floor(self.x-self.velocity),self.y):
                 self.x -= self.velocity
+            else:
+                self.direction = random.randint(1, 4)
             if self.x <= 0:
                 self.x = 0
                 self.direction = random.randint(1, 4)
         elif self.direction == 4:
             if not is_wall(self.x,(floor(self.y-self.velocity))):
                 self.y -= self.velocity
+            else:
+                self.direction = random.randint(1, 4)
             if self.y <= 0:
                 self.y = 0
                 self.direction = random.randint(1, 4)
         self.set_coord(self.x, self.y)
 
 def draw_ghosts(screen):
-    for g in Ghost.ghosts:
+    for g in ghosts:
         g.draw(screen)
+        g.game_tick()
 
-def create_ghosts(ts, ms):
-    Ghost.ghosts = [Ghost(5, 5, ts, ms) for i in range(Ghost.num)]
 
 def tick_ghosts():
     for g in Ghost.ghosts:
@@ -188,14 +231,15 @@ if __name__ == '__main__':
     tile_size = 32
     map_size = 16
     walls=[]
+    ghosts=[]
     input=open('map.txt','r')
     for i in range (17):
         for a in range(17):
             s=input.read(1)
             if s=='w':
                 walls.append(Wall(a,i,tile_size,map_size))
-    ghost = Ghost(0, 0, tile_size, map_size)
-    ghost1= Ghost(1, 2, tile_size, map_size)
+            elif s=='g':
+                ghosts.append(Ghost(a,i,tile_size,map_size))
     pacman = Pacman(5, 5, tile_size, map_size)
     background = pygame.image.load("./resources/background.png")
     screen = pygame.display.get_surface()
@@ -203,14 +247,15 @@ if __name__ == '__main__':
     while 1:
         process_events(pygame.event.get(), pacman)
         pygame.time.delay(100)
-        ghost.game_tick()
-        ghost1.game_tick()
         pacman.game_tick()
         draw_background(screen, background)
         pacman.draw(screen)
-        ghost.draw(screen)
-        ghost1.draw(screen)
+        draw_ghosts(screen)
         draw_walls(screen)
         pygame.display.update()
+        for g in ghosts:
+            if int(g.x)==int(pacman.x) and int(g.y)==int(pacman.y):
+                sys.exit()
+
 
 

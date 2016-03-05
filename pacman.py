@@ -155,7 +155,7 @@ class Map(GameObject):
 class Pacman(GameObject):
     def __init__(self, x, y, tile_size, map_size):
         self.food=0
-        GameObject.__init__(self, './resources/pacman.png', x, y, tile_size, map_size)
+        GameObject.__init__(self, './resources/pacmanvpravo.png', x, y, tile_size, map_size)
         self.direction = 0
         self.velocity = 4.0 / 10.0
 
@@ -202,12 +202,16 @@ def process_events(events, packman):
         elif event.type == KEYDOWN:
             if event.key == K_LEFT:
                 packman.direction = 3
+                pacman.image=pygame.image.load('./resources/pacmanvlevo.png')
             elif event.key == K_RIGHT:
                 packman.direction = 1
+                pacman.image=pygame.image.load('./resources/pacmanvpravo.png')
             elif event.key == K_UP:
                 packman.direction = 4
+                pacman.image=pygame.image.load('./resources/pacmanvverh.png')
             elif event.key == K_DOWN:
                 packman.direction = 2
+                pacman.image=pygame.image.load('./resources/pacmanvniz.png')
             elif event.key == K_SPACE:
                 packman.direction = 0
 
@@ -260,18 +264,18 @@ if __name__ == '__main__':
         pygame.time.delay(100)
         pacman.game_tick()
         draw_background(screen, background)
-        pacman.draw(screen)
-        draw_ghosts(screen)
         draw_walls(screen)
         draw_food(screen)
-        pygame.display.update()
+        draw_ghosts(screen)
         for f in food:
             if int(f.x)==int(pacman.x) and int(f.y)==int(pacman.y):
                 f.life-=1
                 pacman.food+=1
                 food.remove(f)
+        pacman.draw(screen)
+        pygame.display.update()
         print(k,pacman.food)
-
         for g in ghosts:
             if int(g.x)==int(pacman.x) and int(g.y)==int(pacman.y):
                 sys.exit()
+

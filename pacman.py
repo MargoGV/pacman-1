@@ -154,6 +154,7 @@ class Map(GameObject):
 
 class Pacman(GameObject):
     def __init__(self, x, y, tile_size, map_size):
+        self.food=0
         GameObject.__init__(self, './resources/pacman.png', x, y, tile_size, map_size)
         self.direction = 0
         self.velocity = 4.0 / 10.0
@@ -184,11 +185,15 @@ class Pacman(GameObject):
         self.set_coord(self.x, self.y)
 
 class Food(GameObject):
-    def __init__(self, x, y, tile_size, map_size):
-        GameObject.__init__(self, './resources/pig.png', x,y,tile_size,map_size)
-    def game_tick(self):
-        super(Food,self).game_tick()
 
+    def __init__(self, x, y, tile_size, map_size):
+        GameObject.__init__(self, './resources/food.png', x,y,tile_size,map_size)
+        self.life=1
+
+def draw_food(screen):
+    for f in food:
+        if f.life>0:
+            GameObject.draw(f,screen)
 
 def process_events(events, packman):
     for event in events:
@@ -232,6 +237,8 @@ if __name__ == '__main__':
     map_size = 16
     walls=[]
     ghosts=[]
+    food=[]
+    g=len(food)
     input=open('map.txt','r')
     for i in range (17):
         for a in range(17):
@@ -240,11 +247,15 @@ if __name__ == '__main__':
                 walls.append(Wall(a,i,tile_size,map_size))
             elif s=='g':
                 ghosts.append(Ghost(a,i,tile_size,map_size))
+            elif s=='f':
+                food.append(Food(a,i,tile_size,map_size))
     pacman = Pacman(5, 5, tile_size, map_size)
     background = pygame.image.load("./resources/background.png")
     screen = pygame.display.get_surface()
+    k=len(food)
 
-    while 1:
+
+    while pacman.food!=k:
         process_events(pygame.event.get(), pacman)
         pygame.time.delay(100)
         pacman.game_tick()
@@ -252,7 +263,15 @@ if __name__ == '__main__':
         pacman.draw(screen)
         draw_ghosts(screen)
         draw_walls(screen)
+        draw_food(screen)
         pygame.display.update()
+        for f in food:
+            if int(f.x)==int(pacman.x) and int(f.y)==int(pacman.y):
+                f.life-=1
+                pacman.food+=1
+                food.remove(f)
+        print(k,pacman.food)
+
         for g in ghosts:
             if int(g.x)==int(pacman.x) and int(g.y)==int(pacman.y):
                 sys.exit()
